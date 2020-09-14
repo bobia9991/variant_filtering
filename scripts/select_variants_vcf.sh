@@ -8,8 +8,8 @@ output_dir=$2
 ref=$3
 
 output_base=$( basename $input_vcf )
-output_vcf=${output_base%vcf.gz}split.vcf
-
+output_vcf=${output_base%vcf.gz}
+output_vcf=${output_vcf%vcf}split.vcf
 
 ## generate vcf index with tabix
 

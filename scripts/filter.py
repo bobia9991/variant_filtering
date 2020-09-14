@@ -5,6 +5,19 @@ import argparse
 import numpy as np
 import csv
 
+def fix_clinvar_gene(df):
+
+  df['ClinVar_GENE'] = df['ClinVar_GENEINFO'].str.split(":",n=1,expand=True)[0]
+  df.loc[df['ClinVar_GENE'] != df['SYMBOL'],'ClinVar_CLNHGVS'] = np.nan
+  df.loc[df['ClinVar_GENE'] != df['SYMBOL'],'ClinVar_CLNSIG'] = np.nan
+  df.loc[df['ClinVar_GENE'] != df['SYMBOL'],'ClinVar_CLNREVSTAT'] = np.nan
+  df.loc[df['ClinVar_GENE'] != df['SYMBOL'],'ClinVar_CLNDN'] = np.nan
+  df.loc[df['ClinVar_GENE'] != df['SYMBOL'],'ClinVar_GENEINFO'] = np.nan 
+  df.loc[df['ClinVar_GENE'] != df['SYMBOL'],'ClinVar'] = np.nan 
+  df = df.drop(['ClinVar_GENE'], axis=1)
+
+  return df
+
 def read_genelist(file_name):
     
     gene_list = [line.rstrip('\n') for line in open(file_name)]
@@ -18,13 +31,7 @@ def filter_genelist(df, file_name):
     
     return df_filter
 
-def filter_canonical(df):
-    
-    df_filter = df.loc[df[ 'Canonical'] == 'YES' ]
-    
-    return df_filter
-
-def filter_stringent(df):
+def filter_stringent(df,chrm_string):
     
     no_assert = ['no_assertion_criteria_provided']
     paths = ['Pathogenic','Likely_pathogenic','Pathogenic/Likely_pathogenic','Pathogenic&_other']
@@ -35,8 +42,8 @@ def filter_stringent(df):
     path_cond = (df['ClinVar_CLNSIG'].isin(paths))    
     af_cond = ((df['MAX_AF'].isnull()) | (df['MAX_AF'] < 0.01))    
     impact_cond = (df['IMPACT'].isin(impacts))
-    chrm_cond =  (df['CHROM'] == 'chrM')
-    not_chrm_cond = (~(df['CHROM'] == 'chrM'))
+    chrm_cond =  (df['CHROM'] == chrm_string)
+    not_chrm_cond = (~(df['CHROM'] == chrm_string))
     chrm_af_cond = (df['AlleleFreqH'] < 0.01)
 
     up_down_cond = (~df['Consequence'].isin(up_down_cons))
@@ -45,7 +52,7 @@ def filter_stringent(df):
     
     return df_filter
 
-def filter_relaxed(df):
+def filter_relaxed(df, chrm_string):
     
     no_assert = ['no_assertion_criteria_provided']
     paths = ['Pathogenic','Likely_pathogenic','Pathogenic/Likely_pathogenic','Pathogenic&_other']
@@ -58,8 +65,8 @@ def filter_relaxed(df):
     af_cond = ((df['MAX_AF'].isnull()) | (df['MAX_AF'] < 0.01))
     impact_cond = (df['IMPACT'].isin(impacts))
     benign_cond = ((~df['ClinVar_CLNSIG'].isin(benigns)) | (df['ClinVar_CLNSIG'].isnull()))
-    chrm_cond =  (df['CHROM'] == 'chrM')
-    not_chrm_cond = (~(df['CHROM'] == 'chrM'))
+    chrm_cond =  (df['CHROM'] == chrm_string)
+    not_chrm_cond = (~(df['CHROM'] == chrm_string))
     chrm_af_cond = ((df['AlleleFreqH'] < 0.01) | (df['AlleleFreqH'].isnull()))
     up_down_cond = (~df['Consequence'].isin(up_down_cons))
 
@@ -177,31 +184,50 @@ def format_biobank(tsv_in):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-genelist", dest="genelist", help="input genelist", required=True)    
+    parser.add_argument("-genelist", dest="genelist", help="input genelist", required=False)    
     parser.add_argument("-tsv", dest="tsv_in", help="input tsv file", required=True)
+    parser.add_argument("-build", dest="build", help="genome build; b37 and GRCh38 are supported", required=True)
     args = parser.parse_args()
 
-    return args.genelist,args.tsv_in
+    if args.build == 'b37':
+      chrm_string = 'MT'
+    elif args.build == 'GRCh38':
+      chrm_string = 'chrM'
+    else:
+      sys.exit("build not supported")
 
-def run_filter(tsv_in, genelist):
+    if args.genelist is None:
+      genelist = ""
+    else:
+      genelist = args.genelist
+
+    return genelist,args.tsv_in,chrm_string
+
+def run_filter(tsv_in, genelist, chrm_string):
      
     df = pd.read_csv(tsv_in ,sep="\t", dtype={'ClinVar':object,"MAX_AF": "float64"},low_memory=False)
-    df['AlleleFreqH'] = df['AlleleFreqH'].replace(r'^.', '', regex=True)
+    df['AlleleFreqH'] = df['AlleleFreqH'].replace(r'^\.', np.nan, regex=True)
+    df = df.astype({'AlleleFreqH': "float64"})
+  
+    df_fix = fix_clinvar_gene(df)
+    out_unfiltered = tsv_in.replace("tsv","unfiltered.tsv")
+    df_fix.to_csv(out_unfiltered, sep="\t",index=False)
 
-    df = filter_genelist(df, genelist)
-    out_tmp = tsv_in.replace("tsv","genelist.tsv")
-    df.to_csv(out_tmp, sep="\t",index=False)
+    if genelist != "":
+      df = filter_genelist(df, genelist)
+      out_tmp = tsv_in.replace("tsv","genelist.tsv")
+      df.to_csv(out_tmp, sep="\t",index=False)
+    else: 
+      out_tmp=tsv_in
 
     out1 = out_tmp.replace("tsv","removecols.stringent-filter.tsv")
     out2 = out_tmp.replace("tsv","removecols.relaxed-filter.tsv")
     
-    df = pd.read_csv(out_tmp,sep="\t", dtype={'ClinVar':object,"MAX_AF": "float64"},low_memory=False)
-
-    df1 = filter_stringent(df)
+    df1 = filter_stringent(df,chrm_string)
     df1 = remove_cols(df1) 
     df1.to_csv(out1, sep="\t",index=False)
     
-    df2 = filter_relaxed(df)
+    df2 = filter_relaxed(df,chrm_string)
     df2 = remove_cols(df2)
     df2.to_csv(out2, sep="\t",index=False)
 
@@ -209,6 +235,6 @@ def run_filter(tsv_in, genelist):
     format_biobank(out2)
 
 # main
-genelist, tsv_in = parse_args()
-run_filter(tsv_in, genelist)
+genelist, tsv_in, chrm_string  = parse_args()
+run_filter(tsv_in, genelist, chrm_string)
 
