@@ -12,5 +12,5 @@
 sh run_pipeline.sh \
 -v ../test/test_raw.vcf.gz \
 -b GRCh38 \
--o out
+-o out_nogenelist
 

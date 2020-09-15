@@ -13,5 +13,5 @@ sh run_pipeline.sh \
 -v ../test/test_raw.vcf.gz \
 -g ../test/genelist.txt \
 -b GRCh38 \
--o out
+-o out_genelist
 
