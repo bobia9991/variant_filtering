@@ -1,4 +1,4 @@
-# variant_filtering
+# Variant Annotation and Filtering
 
 ## This directory contains scripts to process and annotate variant call files
 
@@ -14,6 +14,7 @@ There are two sub directories:
 3. The script `sbatch_variant_filtering_test.sh` runs the script `run_pipeline.sh` with the test files. To submit to slurm in batch mode: `sbatch sbatch_variant_filtering_test.sh` To run in interactive mode, first get an interactive session, e.g.: `srun --pty --mem=100Gb --cpus=4 bash`.
 Then run `sh sbatch_variant_filtering_test.sh`
 
+### The following options must be specified
 VCF file:
 In order to run this on a new vcf, edit the file `sbatch_variant_filtering_test.sh` put the full path to the gzipped vcf on the line:
 `-v ../test/test_raw.vcf.gz \`
