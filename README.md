@@ -15,16 +15,16 @@ There are two sub directories:
 Then run `sh sbatch_variant_filtering_test.sh`
 
 ### The following options must be specified
-VCF file:
+- VCF file:
 In order to run this on a new vcf, edit the file `sbatch_variant_filtering_test.sh` put the full path to the gzipped vcf on the line:
 `-v ../test/test_raw.vcf.gz \`
 
-Genelist:
+- Genelist:
 Genelist argument is optional.
 To change the genelist, specify the full path to the genelist in this line:
 `-g ../test/genelist.txt \`
 
-Genome build:
+- Genome build:
 Build GRCh38 and b37 (broad's version of GRCh37) are supported.
 Geneome build can be specified this way:
 `-b GRCh38 \`
