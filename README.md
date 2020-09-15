@@ -43,25 +43,25 @@ That is, variants will be listed multiple times, once for each transcript for wh
 If a genelist is provided, this variant list is restricted to the genelist
 
 - `test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.stringent-filter.tsv`
-Stringent filtered variant list that contains variants that meet the following criteria
+Stringent filtered variant list that contains variants that meet all of the following criteria
 
-        Variant has only Pathogenic or Likely_pathogenic clinvar reports with no conflicts (which means no Benign or Likely_benign reports)
-        &
-        There is assertion criteria in the Clinvar review status for the variant
-        &
-        MAX_AF is < 0.01 or missing
-        &
-        VEP IMPACT is High or Moderate
+1. Variant has only Pathogenic or Likely_pathogenic clinvar reports with no conflicts (which means no Benign or Likely_benign reports)
+AND
+2. There is assertion criteria in the Clinvar review status for the variant
+AND
+3. MAX_AF is < 0.01 or missing
+AND
+4. VEP IMPACT is High or Moderate
 
 - `test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.stringent-filter.biobank.tsv` 
 Same as above but with biobank format
 
 - `test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.relaxed-filter.tsv`
-Relaxed filtered variant list that contains variants that meet the following criteria
+Relaxed filtered variant list that contains variants that meet one of the two following weaker conditions
 
-        Variant has only Pathogenic or Likely_pathogenic clinvar reports with no conflicts (which means no Benign or Likely_benign reports)
-        OR
-        variant has NO Benign or Likely_benign reports  & MAX_AF is < 0.01 or missing  & VEP IMPACT is High or Moderate
+1. Variant has only Pathogenic or Likely_pathogenic clinvar reports with no conflicts (which means no Benign or Likely_benign reports)
+OR
+2. variant has NO Benign or Likely_benign reports  & MAX_AF is < 0.01 or missing  & VEP IMPACT is High or Moderate
 
 - `test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.relaxed-filter.biobank.tsv` 
 Same as above but with biobank format
