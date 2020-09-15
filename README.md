@@ -1,13 +1,13 @@
 # variant_filtering
 
-##This directory contains scripts to process and annotate variant call files
+## This directory contains scripts to process and annotate variant call files
 
 There are two sub directories:
 1) scripts - contains all code
 
 2) test - contains test data
 
-##To run the test data on the Tufts HPC:
+## To run the test data on the Tufts HPC:
 
 1. `git clone https://github.com/rbatorsky/variant_filtering.git`
 2. `cd variant_filtering/scripts`
@@ -31,17 +31,17 @@ Geneome build can be specified this way:
 The output directory can be specified in the last line:
 `-o out`
 
-##Output files
+## Output files
 
 When run on the test data with the example run script, the output directory contains the following files:
--test_raw.split.hmtnote.pickgene-gencode.formatcsq.unfiltered.tsv
+- `test_raw.split.hmtnote.pickgene-gencode.formatcsq.unfiltered.tsv`
 This contains all variants that were in the initial vcf, one line per variant per transcript.
 That is, variants will be listed multiple times, once for each transcript for which they have a VEP consequence.
 
--test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.tsv
+- `test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.tsv`
 If a genelist is provided, this variant list is restricted to the genelist
 
--test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.stringent-filter.tsv
+- `test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.stringent-filter.tsv`
 Stringent filtered variant list that contains variants that meet the following criteria
 
         Variant has only Pathogenic or Likely_pathogenic clinvar reports with no conflicts (which means no Benign or Likely_benign reports)
@@ -52,18 +52,18 @@ Stringent filtered variant list that contains variants that meet the following c
         &
         VEP IMPACT is High or Moderate
 
--test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.stringent-filter.biobank.tsv
+- `test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.stringent-filter.biobank.tsv` 
 Same as above but with biobank format
 
--test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.relaxed-filter.tsv
+- `test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.relaxed-filter.tsv`
 Relaxed filtered variant list that contains variants that meet the following criteria
 
         Variant has only Pathogenic or Likely_pathogenic clinvar reports with no conflicts (which means no Benign or Likely_benign reports)
         OR
         variant has NO Benign or Likely_benign reports  & MAX_AF is < 0.01 or missing  & VEP IMPACT is High or Moderate
 
--test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.relaxed-filter.biobank.tsv
+- `test_raw.split.hmtnote.pickgene-gencode.formatcsq.genelist.removecols.relaxed-filter.biobank.tsv` 
 Same as above but with biobank format
 
--tmp
+- `tmp`
 Folder with intermediate outputs, can be ignored but is useful for debugging.
