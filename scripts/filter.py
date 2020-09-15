@@ -14,7 +14,7 @@ def fix_clinvar_gene(df):
   df.loc[df['ClinVar_GENE'] != df['SYMBOL'],'ClinVar_CLNDN'] = np.nan
   df.loc[df['ClinVar_GENE'] != df['SYMBOL'],'ClinVar_GENEINFO'] = np.nan 
   df.loc[df['ClinVar_GENE'] != df['SYMBOL'],'ClinVar'] = np.nan 
-  df = df.drop(['ClinVar_GENE'], axis=1)
+  del df['ClinVar_GENE']
 
   return df
 

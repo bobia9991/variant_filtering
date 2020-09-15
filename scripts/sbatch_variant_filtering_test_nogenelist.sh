@@ -8,10 +8,9 @@
 #SBATCH --output=%j.out
 #SBATCH --error=%j.err
 
-# test with  genelist
+# test with no geneslist
 sh run_pipeline.sh \
 -v ../test/test_raw.vcf.gz \
--g ../test/genelist.txt \
 -b GRCh38 \
 -o out
 
